@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import ToyForm from "./ToyForm";
 import ToyContainer from "./ToyContainer";
+import fallbackToys from "../data/toys";
 
 function App() {
   const [showForm, setShowForm] = useState(false);
@@ -13,7 +14,11 @@ function App() {
     // Load toys when the app first starts.
     fetch("http://localhost:3001/toys")
       .then((response) => response.json())
-      .then((toys) => setToys(toys));
+      .then((toys) => setToys(toys))
+      .catch(() => {
+        // Use local toys if json-server is not running.
+        setToys(fallbackToys);
+      });
   }, []);
 
   function handleClick() {
@@ -28,6 +33,8 @@ function App() {
   function handleDeleteToy(id) {
     fetch(`http://localhost:3001/toys/${id}`, {
       method: "DELETE",
+    }).catch(() => {
+      // The page can still remove toys without json-server.
     });
 
     // Remove the donated toy from the page.

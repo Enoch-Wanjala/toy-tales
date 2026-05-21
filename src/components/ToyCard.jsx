@@ -15,7 +15,11 @@ function ToyCard({ toy, onDeleteToy, onUpdateToy }) {
       }),
     })
       .then((response) => response.json())
-      .then((updatedToy) => onUpdateToy(updatedToy));
+      .then((updatedToy) => onUpdateToy(updatedToy))
+      .catch(() => {
+        // Update likes locally if json-server is not running.
+        onUpdateToy({ ...toy, likes: likes + 1 });
+      });
   }
 
   return (

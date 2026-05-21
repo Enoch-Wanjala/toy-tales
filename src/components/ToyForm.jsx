@@ -27,6 +27,15 @@ function ToyForm({ onAddToy }) {
       likes: 0,
     };
 
+    function addToyAndClearForm(toy) {
+      // Add the new toy after the server saves it.
+      onAddToy(toy);
+      setFormData({
+        name: "",
+        image: "",
+      });
+    }
+
     fetch("http://localhost:3001/toys", {
       method: "POST",
       headers: {
@@ -36,12 +45,11 @@ function ToyForm({ onAddToy }) {
     })
       .then((response) => response.json())
       .then((toy) => {
-        // Add the new toy after the server saves it.
-        onAddToy(toy);
-        setFormData({
-          name: "",
-          image: "",
-        });
+        addToyAndClearForm({ ...newToy, ...toy });
+      })
+      .catch(() => {
+        // Add the toy locally if json-server is not running.
+        addToyAndClearForm({ ...newToy, id: Date.now().toString() });
       });
   }
 
